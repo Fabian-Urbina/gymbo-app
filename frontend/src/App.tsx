@@ -5,6 +5,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { statsChart, barbell, person } from 'ionicons/icons';
 
 import Home from './pages/Home';
+import UserData from './pages/UserData';
 import Chat from './components/Chat';
 
 /* Core CSS required for Ionic components to work properly */
@@ -53,6 +54,9 @@ const App: React.FC = () => {
           <Route exact path="/home">
             <Home />
           </Route>
+          <Route exact path="/userdata">
+            <UserData />
+          </Route>
           <Route exact path="/">
             <Redirect to="/home" />
           </Route>
@@ -65,9 +69,9 @@ const App: React.FC = () => {
             <IonLabel>Performance</IonLabel>
           </IonTabButton>
 
-          <IonTabButton tab="other1" href="/other1">
+          <IonTabButton tab="userdata" href="/userdata">
             <IonIcon icon={barbell} />
-            <IonLabel>Other 1</IonLabel>
+            <IonLabel>User Data</IonLabel>
           </IonTabButton>
 
           <IonTabButton tab="other2" href="/other2">
