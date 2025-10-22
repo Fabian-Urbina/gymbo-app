@@ -1,2 +1,32 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+.gymbo-floating-btn {
+  position: fixed;             /* float relative to viewport */
+  bottom: 70px;                /* slightly above the tab bar */
+  left: 50%;                   /* horizontal center */
+  transform: translateX(-50%); /* exact centering */
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #3880ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 1000;               /* always on top */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gymbo-floating-btn:hover {
+  transform: translateX(-50%) translateY(-5px) scale(1.05); /* moves up + slight scale */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.35); /* more prominent shadow on hover */
+}
+
+.gymbo-emoji {
+  font-size: 36px;             /* robot emoji size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

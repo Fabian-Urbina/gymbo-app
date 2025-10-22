@@ -1,32 +1,43 @@
 import React, { useState } from "react";
-import { IonModal, IonButton, IonContent } from "@ionic/react";
-import Chat from "../components/Chat"; // your chat component
+import { IonContent, IonPage, IonText } from "@ionic/react";
 import DummyChart from "../components/DummyChart";
+import Header from '../components/Header';
 
 const Home: React.FC = () => {
-  const [showChat, setShowChat] = useState(false);
-  const [messages, setMessages] = useState<string[]>(["🤖 Gymbo: Welcome! I'm your AI gym assistant. Let's get started!"]);
 
-  return (
-    <IonContent style={{ padding: 20, display: "flex", flexDirection: "column", alignItems: "center" }}>
+  const renderWelcome = () => (
+    <IonText>
+      <h2>Welcome!</h2>
+      <p>This is Gymbo, an AI based assistant that keeps track of your gym sessions!</p>
+    </IonText>
+  );
+
+  const renderStats = () => (
+    <div style={{ marginTop: 20 }}>
       <h2>Your Stats</h2>
       <p>Name: John Doe</p>
       <p>Height: 180 cm</p>
       <p>Weight: 75 kg</p>
       <p>Bench Press: 20 kg</p>
+    </div>
+  );
 
-      <h3>Workout Performance</h3> 
+  const renderChart = () => (
+    <div style={{ marginTop: 20, textAlign: 'center' }}>
+      <h3>Workout Performance</h3>
       <DummyChart />
+    </div>
+  );
 
-      <IonButton onClick={() => setShowChat(true)} style={{ marginTop: 20 }}>
-        Talk to Gymbo!
-      </IonButton>
-
-      <IonModal isOpen={showChat} onDidDismiss={() => setShowChat(false)}>
-        <Chat initialMessages={messages} onClose={(newMessages) => setMessages(newMessages)} />
-        <IonButton onClick={() => setShowChat(false)}>Close Chat</IonButton>
-      </IonModal>
-    </IonContent>
+  return (
+    <IonPage>
+      <Header title="Home" />
+      <IonContent className="ion-padding">
+        {renderWelcome()}
+        {renderStats()}
+        {renderChart()}
+      </IonContent>
+    </IonPage> 
   );
 };
 
