@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>(["🤖 Gymbo: Welcome! I'm your AI gym assistant. Let's get started!"]); // Creates a list of messages and a method to change the state of this list
-  const [input, setInput] = useState(""); // Creates an empty user's input and a method to change the state of this input
+interface ChatProps {
+  initialMessages: string[];
+  onClose: (messages: string[]) => void; // callback to send messages back to Home
+}
+
+const Chat: React.FC<ChatProps> = ({ initialMessages, onClose }) => {
+  const [messages, setMessages] = useState<string[]>(initialMessages);
+  const [input, setInput] = useState("");
+
+  useEffect(() => {
+    return () => {
+      // When Chat unmounts (modal closes), send messages back to Home
+      onClose(messages);
+    };
+  }, [messages, onClose]);
 
   const sendMessage = async () => { // if non-empty, adds the input to the chatbot and then adds the bot answer
     if (!input) return;
-    setMessages(prev => [...prev, `👤 You: ${input}`]); // Defines what setMessages will do with the current messages state
+    setMessages(prev => [...prev, `🧑 You: ${input}`]); // Defines what setMessages will do with the current messages state
     try {
       const res = await fetch("http://localhost:8000/api/chat", {
         method: "POST",
