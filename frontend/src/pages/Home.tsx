@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { IonContent, IonPage, IonText } from "@ionic/react";
 import DummyChart from "../components/DummyChart";
 import Header from '../components/Header';

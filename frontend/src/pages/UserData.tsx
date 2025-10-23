@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import {
-  IonApp,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
+  IonPage,
   IonContent,
   IonItem,
   IonLabel,
@@ -12,6 +9,7 @@ import {
   IonList,
   IonText,
 } from "@ionic/react";
+import Header from '../components/Header';
 
 const UserData: React.FC = () => {
   const [name, setName] = useState("");
@@ -27,8 +25,8 @@ const UserData: React.FC = () => {
       weight: weight ? Number(weight) : null,
       height: height ? Number(height) : null,
     };
-
     try {
+      console.log("Sending payload:", JSON.stringify(payload, null, 2));
       const res = await fetch("http://127.0.0.1:8000/api/create_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -43,52 +41,36 @@ const UserData: React.FC = () => {
     }
   };
 
+  type inputItemType = {
+    label: string;
+    value: string | number;
+    setValue: (v: string) => void;
+    type?: 'text' | 'number';
+    required?: boolean;
+  };
+
+  const InputItem = (props: inputItemType) => (
+  <IonItem>
+    <IonLabel position="floating">{props.label}</IonLabel>
+    <IonInput
+      type={props.type ?? 'text'}
+      value={props.value}
+      onIonChange={(e) => props.setValue(e.detail.value!)}
+      required={props.required ?? false}
+    />
+  </IonItem>
+  );
+
   return (
-    <IonApp>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Create User</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-
+    <IonPage>
+      <Header title="Create User" />
       <IonContent className="ion-padding">
+
         <IonList>
-          <IonItem>
-            <IonLabel position="floating">Name</IonLabel>
-            <IonInput
-              value={name}
-              onIonChange={(e) => setName(e.detail.value!)}
-              required
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel position="floating">Age</IonLabel>
-            <IonInput
-              type="number"
-              value={age}
-              onIonChange={(e) => setAge(e.detail.value!)}
-              required
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel position="floating">Weight</IonLabel>
-            <IonInput
-              type="number"
-              value={weight}
-              onIonChange={(e) => setWeight(e.detail.value!)}
-            />
-          </IonItem>
-
-          <IonItem>
-            <IonLabel position="floating">Height</IonLabel>
-            <IonInput
-              type="number"
-              value={height}
-              onIonChange={(e) => setHeight(e.detail.value!)}
-            />
-          </IonItem>
+          <InputItem label="Name" value={name} setValue={setName} type="text" required={true} />
+          <InputItem label="Age" value={age} setValue={setAge} type="number" required={true} />
+          <InputItem label="Weight" value={weight} setValue={setWeight} type="number" />
+          <InputItem label="Height" value={height} setValue={setHeight} type="number" />
         </IonList>
 
         <IonButton expand="block" onClick={handleSubmit}>
@@ -101,7 +83,7 @@ const UserData: React.FC = () => {
           </IonText>
         )}
       </IonContent>
-    </IonApp>
+    </IonPage>
   );
 };
 
