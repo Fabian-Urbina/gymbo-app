@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonTabs, IonRouterOutlet, setupIonicReact, IonTabBar, IonTabButton, IonIcon, IonButton, IonLabel, IonModal } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { statsChart, barbell, person } from 'ionicons/icons';
 
+import Login from './pages/Login';
 import Home from './pages/Home';
 import UserData from './pages/UserData';
 import Chat from './components/Chat';
+import ProtectedRoute from './components/ProtectedRoute';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -41,6 +43,14 @@ import './theme/variables.css';
 setupIonicReact();
 
 const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Example: check if token exists in localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    setIsAuthenticated(!!token);
+  }, []);
+
   const [showChat, setShowChat] = useState(false); {/* Persistant chat state among pages */}
   const [messages, setMessages] = useState<string[]>(["🤖 Gymbo: Welcome! I'm your AI gym assistant. Let's get started!"]);
 
@@ -51,11 +61,20 @@ const App: React.FC = () => {
       <IonTabs>
         
         <IonRouterOutlet>
-          <Route exact path="/home" component={Home} />
-          <Route exact path="/userdata" component={UserData} />
-          <Route exact path="/">
-            <Redirect to="/home" />
+
+          <Route path="/login">
+            <Login setIsAuthenticated={setIsAuthenticated} />
           </Route>
+
+          {/* Any protected page */}
+          <ProtectedRoute path="/home" isAuthenticated={isAuthenticated} component={Home} />
+          <ProtectedRoute path="/userdata" isAuthenticated={!isAuthenticated} component={UserData} />
+          <ProtectedRoute path="/other2" isAuthenticated={!isAuthenticated} component={UserData} />
+
+          <Route exact path="/">
+            <Redirect to={!isAuthenticated ? "/home" : "/login"} />
+          </Route>
+
         </IonRouterOutlet>
 
         {/* Navigation Bar */}
@@ -70,6 +89,11 @@ const App: React.FC = () => {
             <IonLabel>User Data</IonLabel>
           </IonTabButton>
 
+          <IonTabButton tab="login" href="/login">
+            <IonIcon icon={barbell} />
+            <IonLabel>Login</IonLabel>
+          </IonTabButton>
+
           <IonTabButton tab="other2" href="/other2">
             <IonIcon icon={person} />
             <IonLabel>Other 2</IonLabel>
@@ -78,9 +102,12 @@ const App: React.FC = () => {
       </IonTabs>
 
       {/* Floating Gymbo! button */}
-      <div className="gymbo-floating-btn" onClick={() => setShowChat(true)}>
-        <span className="gymbo-emoji">🤖</span>
-      </div>
+
+{!isAuthenticated && (
+  <div className="gymbo-floating-btn" onClick={() => setShowChat(true)}>
+    <span className="gymbo-emoji">🤖</span>
+  </div>
+)}
 
       <IonModal isOpen={showChat} onDidDismiss={() => setShowChat(false)}>
         <Chat initialMessages={messages} onClose={(newMessages) => setMessages(newMessages)} />
