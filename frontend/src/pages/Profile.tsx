@@ -11,7 +11,7 @@ import {
 } from "@ionic/react";
 import Header from '../components/Header';
 
-const UserData: React.FC = () => {
+const Profile: React.FC = () => {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [weight, setWeight] = useState("");
@@ -87,4 +87,4 @@ const UserData: React.FC = () => {
   );
 };
 
-export default UserData;
+export default Profile;

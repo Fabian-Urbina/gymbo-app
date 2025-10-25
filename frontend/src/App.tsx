@@ -7,7 +7,7 @@ import { statsChart, barbell, person } from 'ionicons/icons';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
-import UserData from './pages/UserData';
+import Profile from './pages/Profile';
 import Chat from './components/Chat';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -63,19 +63,15 @@ const App: React.FC = () => {
         
         <IonRouterOutlet>
 
-          <Route path="/login">
-            <Login setIsAuthenticated={setIsAuthenticated} />
-          </Route>
-
-          {/* Any protected page */}
+          <Route path="/login"> <Login /> </Route>
+          <Route path="/home"> <Home /> </Route>
+          <Route path="/profile"> <Profile /> </Route>
+          <Route path="/Register"> <Register /> </Route>
+          <Route exact path="/"> <Redirect to="/home"/> </Route>
+          {/* Any protected page 
           <ProtectedRoute path="/home" isAuthenticated={isAuthenticated} component={Home} />
           <ProtectedRoute path="/userdata" isAuthenticated={!isAuthenticated} component={UserData} />
-          <ProtectedRoute path="/other2" isAuthenticated={!isAuthenticated} component={UserData} />
-          <ProtectedRoute path="/register" isAuthenticated={!isAuthenticated} component={Register} />
-
-          <Route exact path="/">
-            <Redirect to={!isAuthenticated ? "/home" : "/login"} />
-          </Route>
+          <ProtectedRoute path="/register" isAuthenticated={!isAuthenticated} component={Register} /> */}
 
         </IonRouterOutlet>
 
@@ -83,22 +79,17 @@ const App: React.FC = () => {
         <IonTabBar slot="bottom">
           <IonTabButton tab="home" href="/home">
             <IonIcon icon={statsChart} />
-            <IonLabel>Performance</IonLabel>
+            <IonLabel>Home</IonLabel>
           </IonTabButton>
 
-          <IonTabButton tab="userdata" href="/userdata">
+          <IonTabButton tab="profile" href="/profile">
             <IonIcon icon={barbell} />
-            <IonLabel>User Data</IonLabel>
+            <IonLabel>Profile</IonLabel>
           </IonTabButton>
 
           <IonTabButton tab="login" href="/login">
             <IonIcon icon={barbell} />
             <IonLabel>Login</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton tab="other2" href="/other2">
-            <IonIcon icon={person} />
-            <IonLabel>Other 2</IonLabel>
           </IonTabButton>
 
           <IonTabButton tab="register" href="/register">
@@ -112,11 +103,11 @@ const App: React.FC = () => {
 
       {/* Floating Gymbo! button */}
 
-{!isAuthenticated && (
+
   <div className="gymbo-floating-btn" onClick={() => setShowChat(true)}>
     <span className="gymbo-emoji">🤖</span>
   </div>
-)}
+
 
       <IonModal isOpen={showChat} onDidDismiss={() => setShowChat(false)}>
         <Chat initialMessages={messages} onClose={(newMessages) => setMessages(newMessages)} />
