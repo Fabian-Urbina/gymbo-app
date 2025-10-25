@@ -5,6 +5,8 @@ import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import bcrypt
+import jwt #add to req
+from datetime import datetime, timedelta, timezone# add to req
 
 # Load variables from .env
 load_dotenv()
@@ -64,3 +66,36 @@ def register(registerdata: RegisterData):
     except Exception as e:
         print("Error during insert")
         return{"reply": "Error during insert"}
+
+SECRET_KEY=os.getenv("SECRET_KEY")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+    
+class LoginData(BaseModel):
+    username : str = Field(...,min_length=1)
+    password : str = Field(...,min_length=1)
+@app.post("/api/login")
+def login(logindata: LoginData):
+    username=logindata.username
+    password=logindata.password
+    res = supabase.table("users").select("*").eq("username", username).execute()
+    if res.data == []:
+        return{"reply":"username not registered"}
+
+    stored_hash = res.data[0]["password"]
+    if bcrypt.checkpw(password.encode("utf-8"), stored_hash.encode("utf-8")):
+        token = create_access_token({"username":username},expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+        return {"reply": "Correct password","token": token}
+    else:
+        return {"reply": "Incorrect password"}
