@@ -2,10 +2,10 @@ import React from "react";
 import { useState } from 'react';
 import { IonButton, IonContent, IonInput, IonPage, IonText } from "@ionic/react";
 import { Redirect } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 
 const Register: React.FC = () => {
-    const [registered, setRegistered] = useState(false) // I don't think this is the correct form to handle this
-
+    const history = useHistory()
     async function register(formData: FormData)  {
         const userData = Object.fromEntries(formData.entries());
         console.log(JSON.stringify(userData));
@@ -17,16 +17,13 @@ const Register: React.FC = () => {
             })
             const data = await res.json();
             console.log("Connected");
-            setRegistered(true)
+            console.log(data.reply)
+            //history.push("\login")
         }
         catch { 
             console.log("Register could not connect to backend");
         }
     };
-
-    if (registered) {
-        return <Redirect to="/userdata" />;
-    }
 
     return (
         <IonPage>
