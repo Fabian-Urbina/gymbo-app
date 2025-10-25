@@ -18,6 +18,7 @@ const Register: React.FC = () => {
             const data = await res.json();
             console.log("Connected");
             console.log(data.reply)
+            alert('Login failed');
             //history.push("\login")
         }
         catch { 

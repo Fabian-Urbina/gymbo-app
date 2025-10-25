@@ -1,47 +1,46 @@
-// src/pages/LoginPage.tsx
-import { IonPage, IonContent, IonInput, IonButton, IonItem, IonLabel } from '@ionic/react';
+import React from "react";
 import { useState } from 'react';
+import { IonButton, IonContent, IonInput, IonPage, IonText } from "@ionic/react";
+import { useHistory } from "react-router-dom";
+import Header from '../components/Header';
 
-interface LoginPageProps {
-  setIsAuthenticated: (v: boolean) => void;
-}
+const Login: React.FC = () => {
+    const history = useHistory()
+    async function login(formData: FormData)  {
+        const userData = Object.fromEntries(formData.entries());
+        console.log(JSON.stringify(userData));
+        try {
+            const res = await fetch("http://localhost:8000/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(userData)
+            })
+            const data = await res.json();
+            console.log("Connected");
+            console.log(data.reply)
+            alert('Login failed');
+            //history.push("\login")
+        }
+        catch { 
+            console.log("Login could not connect to backend");
+        }
+    };
 
-const LoginPage: React.FC<LoginPageProps> = ({ setIsAuthenticated }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleLogin = async () => {
-    // Call your FastAPI login endpoint here
-    const res = await fetch('http://127.0.0.1:8000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem('access_token', data.access_token);
-      setIsAuthenticated(true);
-    } else {
-      alert('Login failed');
-    }
-  };
-
-  return (
-    <IonPage>
-      <IonContent className="ion-padding">
-        <IonItem>
-          <IonLabel position="floating">Username</IonLabel>
-          <IonInput value={username} onIonChange={e => setUsername(e.detail.value!)} />
-        </IonItem>
-        <IonItem>
-          <IonLabel position="floating">Password</IonLabel>
-          <IonInput type="password" value={password} onIonChange={e => setPassword(e.detail.value!)} />
-        </IonItem>
-        <IonButton expand="block" onClick={handleLogin}>Login</IonButton>
-      </IonContent>
-    </IonPage>
-  );
+    return (
+        <IonPage>
+        <Header title="Login" />
+        <IonContent className="ion-padding">
+        <IonText>Please write your credit card number and security code.</IonText>
+        <form action={login}>
+            <div> <IonInput name="username" type="text" placeholder="Type your username"/> </div> 
+            <div> <IonInput name="password" type="password" placeholder="Type your password"/> </div>
+            <IonButton type="submit">Login</IonButton>
+        </form>
+        <IonButton onClick={() => history.push("register")}>Register</IonButton>
+        <IonButton >Forgot Password?</IonButton>
+        </IonContent>
+        </IonPage> 
+    );
 };
 
-export default LoginPage;
+export default Login;
