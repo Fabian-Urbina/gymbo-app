@@ -5,6 +5,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { statsChart, barbell, person } from 'ionicons/icons';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Home from './pages/Home';
 import UserData from './pages/UserData';
 import Chat from './components/Chat';
@@ -70,6 +71,7 @@ const App: React.FC = () => {
           <ProtectedRoute path="/home" isAuthenticated={isAuthenticated} component={Home} />
           <ProtectedRoute path="/userdata" isAuthenticated={!isAuthenticated} component={UserData} />
           <ProtectedRoute path="/other2" isAuthenticated={!isAuthenticated} component={UserData} />
+          <ProtectedRoute path="/register" isAuthenticated={!isAuthenticated} component={Register} />
 
           <Route exact path="/">
             <Redirect to={!isAuthenticated ? "/home" : "/login"} />
@@ -98,7 +100,14 @@ const App: React.FC = () => {
             <IonIcon icon={person} />
             <IonLabel>Other 2</IonLabel>
           </IonTabButton>
+
+          <IonTabButton tab="register" href="/register">
+            <IonIcon icon={person} />
+            <IonLabel>Register</IonLabel>
+          </IonTabButton>
+
         </IonTabBar>
+
       </IonTabs>
 
       {/* Floating Gymbo! button */}
