@@ -4,4 +4,4 @@ pydantic
 python-dotenv
 supabase
 bcrypt
-jwt
+PyJWT

@@ -5,8 +5,10 @@ import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import bcrypt
-import jwt #add to req
-from datetime import datetime, timedelta, timezone# add to req
+import jwt 
+from datetime import datetime, timedelta, timezone
+from auth.routes import router as auth_router
+
 
 # Load variables from .env
 load_dotenv()
@@ -14,6 +16,7 @@ load_dotenv()
 # Get them safely from the environment
 
 app = FastAPI()
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 
 # Allow frontend requests (CORS)
 app.add_middleware(
@@ -49,7 +52,7 @@ supabase: Client =create_client(url,key)
 class RegisterData(BaseModel):
     username : str = Field(...,min_length=1)
     password : str = Field(...,min_length=1)
-@app.post("/api/register")
+'''@app.post("/api/register")
 def register(registerdata: RegisterData):
     username=registerdata.username
     res = supabase.table("users").select("*").eq("username", username).execute()
@@ -66,7 +69,7 @@ def register(registerdata: RegisterData):
     except Exception as e:
         print("Error during insert")
         return{"reply": "Error during insert"}
-
+'''
 SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
