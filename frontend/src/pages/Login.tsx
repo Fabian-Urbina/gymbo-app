@@ -3,13 +3,18 @@ import { useState } from 'react';
 import { IonButton, IonContent, IonImg, IonInput, IonPage, IonText } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { useIonRouter } from "@ionic/react";
-import LoginHeader from "../components/LoginHeader"
+import Header from "../components/Header"
+import GymboLoginImage from '../assets/gymbo-login.png';
 
 const Login: React.FC = () => {
     const history = useHistory()
     const router = useIonRouter()
-    async function login(formData: FormData)  {
-        const userData = Object.fromEntries(formData.entries());
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    async function login()  {
+        const userData = {username, password}
         console.log(JSON.stringify(userData));
         try {
             const res = await fetch("http://localhost:8000/api/login", {
@@ -31,18 +36,28 @@ const Login: React.FC = () => {
     };
 
     return (
-        <IonPage>
-        <LoginHeader title="Login" />
-        <IonContent className="ion-padding">
-        <form action={login}>
-            <div> <IonInput name="username" type="text" placeholder="Type your username"/> </div> 
-            <div> <IonInput name="password" type="password" placeholder="Type your password"/> </div>
-            <IonButton type="submit">Login</IonButton>
-        </form>
-        <IonButton onClick={() => history.push("register")}>Have an account?</IonButton>
-        <IonButton >Forgot Password?</IonButton>
-        </IonContent>
-        </IonPage> 
+<IonPage>
+    <Header title="Login" />
+    <IonContent className="ion-padding" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", gap:"2rem" }}>
+        <IonImg src={GymboLoginImage} style={{ width: "90%", maxWidth: "300px", height: "auto", margin:  "0 auto 2rem auto"}} />
+        <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:"1rem"}}>
+            {/*Username and password fields */}
+            <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", width: "80%", maxWidth: "400px"}}>
+                <IonInput label="Username" value={username} onIonChange={e => setUsername(e.detail.value!)} labelPlacement="floating" fill="outline" type="text" />
+                <IonInput label="Password" value={password} onIonChange={e => setPassword(e.detail.value!)} labelPlacement="floating" fill="outline" type="password" />
+            </div>
+
+            {/*Login button */}
+            <IonButton onClick={login}> Login </IonButton> 
+
+            {/*Register/Forgot buttons */}
+            <div style={{display:"flex", justifyContent:"center", gap:"1rem"}}>
+                <IonButton onClick={() => history.push("register")} fill="clear" style={{minWidth:"auto"}}>Register</IonButton>
+                <IonButton fill="clear" style={{minWidth:"auto"}}>Forgot?</IonButton>
+            </div>
+        </div>
+    </IonContent>
+</IonPage>
     );
 };
 
