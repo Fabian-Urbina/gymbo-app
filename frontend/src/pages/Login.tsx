@@ -2,9 +2,8 @@ import React from "react";
 import { useState } from 'react';
 import { IonButton, IonContent, IonImg, IonInput, IonPage, IonText } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import Header from '../components/Header';
 import { useIonRouter } from "@ionic/react";
-import myImage from '../assets/gymbo-login.png';
+import LoginHeader from "../components/LoginHeader"
 
 const Login: React.FC = () => {
     const history = useHistory()
@@ -33,15 +32,14 @@ const Login: React.FC = () => {
 
     return (
         <IonPage>
-        <Header title="Login" />
+        <LoginHeader title="Login" />
         <IonContent className="ion-padding">
-        <div> <IonImg src={myImage} style={{ width: "50%", display: "block", marginLeft: "auto", marginRight: "auto",}} /></div>
         <form action={login}>
             <div> <IonInput name="username" type="text" placeholder="Type your username"/> </div> 
             <div> <IonInput name="password" type="password" placeholder="Type your password"/> </div>
             <IonButton type="submit">Login</IonButton>
         </form>
-        <IonButton onClick={() => history.push("register")}>Register</IonButton>
+        <IonButton onClick={() => history.push("register")}>Have an account?</IonButton>
         <IonButton >Forgot Password?</IonButton>
         </IonContent>
         </IonPage> 

@@ -6,8 +6,7 @@ import { useIonRouter } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 
 import AppLayout from "./layouts/AppLayout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import LoginLayout from "./layouts/LoginLayout";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -60,8 +59,8 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet key={isLoggedIn ? "logged" : "logged-out"}>
           <Switch>
-            <Route exact path="/login"> {!isLoggedIn ? <Login /> : <Redirect to="/profile" />} </Route>
-            <Route exact path="/register"> {!isLoggedIn ? <Register /> : <Redirect to="/home" />} </Route>
+            <Route exact path="/login"> {!isLoggedIn ? <LoginLayout /> : <Redirect to="/home" />} </Route>
+            <Route exact path="/register"> {!isLoggedIn ? <LoginLayout /> : <Redirect to="/home" />} </Route>
             <Route path="/"> {isLoggedIn ? <AppLayout onLogout={onLogout} /> : <Redirect to="/login" push={false}/>} </Route>
           </Switch>
         </IonRouterOutlet>

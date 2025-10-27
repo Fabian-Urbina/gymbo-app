@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonTabs, IonRouterOutlet, setupIonicReact, IonTabBar, IonTabButton, IonIcon, IonButton, IonLabel, IonModal } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
+import React, { useState } from "react";
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonIcon, IonButton, IonLabel, IonModal } from '@ionic/react';
 import { statsChart, barbell, person } from 'ionicons/icons';
 
 import Home from '../pages/Home';
@@ -55,10 +54,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({onLogout}) => {
     <>
     <IonTabs>
         <IonRouterOutlet>
+          <Switch>
             <Route exact path="/home"> <Home /> </Route>
             <Route exact path="/workouts"> <Workouts /> </Route>
             <Route exact path="/profile"> <Profile /> </Route>
-            <Route exact path="/"> <Redirect to="/home" /> </Route>
+            <Route path="/"> <Redirect to="/home" /> </Route>
+          </Switch>
         </IonRouterOutlet>
         
         <SettingsMenu className="settings-menu" onLogout={onLogout}/>

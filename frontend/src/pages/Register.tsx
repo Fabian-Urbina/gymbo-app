@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { IonButton, IonContent, IonInput, IonPage, IonText } from "@ionic/react";
 import { Redirect } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
+import LoginHeader from "../components/LoginHeader"
 
 const Register: React.FC = () => {
     const history = useHistory()
@@ -28,13 +29,14 @@ const Register: React.FC = () => {
 
     return (
         <IonPage>
+        <LoginHeader title="Register" />
         <IonContent className="ion-padding">
-        <IonText>Please write your credit card number and security code.</IonText>
         <form action={register}>
             <div> <IonInput name="username" type="text" placeholder="Type your username"/> </div> 
             <div> <IonInput name="password" type="password" placeholder="Type your password"/> </div>
             <IonButton type="submit">Register</IonButton>
         </form>
+        <IonButton onClick={() => history.push("login")}>Already registered?</IonButton>
         </IonContent>
         </IonPage> 
     );
