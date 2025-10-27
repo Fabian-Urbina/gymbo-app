@@ -17,7 +17,7 @@ const Login: React.FC = () => {
         const userData = {username, password}
         console.log(JSON.stringify(userData));
         try {
-            const res = await fetch("http://localhost:8000/api/login", {
+            const res = await fetch("http://localhost:8000/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(userData)
@@ -25,7 +25,7 @@ const Login: React.FC = () => {
             const data = await res.json();
             console.log("Connected");
             console.log(data.reply)
-            localStorage.setItem("GYMBO_ACCESS_TOKEN", "12345"); // Stores the token
+            localStorage.setItem("GYMBO_ACCESS_TOKEN", data.token); // Stores the token
             window.location.href = "/login"; // forces browser to load login fresh
             router.push("/login", "root"); // makes /login the root page
             history.replace("/login", "root"); // makes /login the root page

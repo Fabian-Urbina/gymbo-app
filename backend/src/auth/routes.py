@@ -3,8 +3,10 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import bcrypt
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter
-from .schemas import AuthData
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+import jwt
+from .schemas import AuthData, TokenData
 from .utils import create_access_token
 
 load_dotenv()
@@ -12,6 +14,8 @@ router=APIRouter()
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_API_KEY")
 supabase: Client =create_client(url,key)
+SECRET_KEY=os.getenv("SECRET_KEY")
+ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 @router.post("/register")
@@ -45,4 +49,22 @@ def login(logindata: AuthData):
         token = create_access_token({"username":username},expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
         return {"reply": "Correct password","token": token}
     else:
-        return {"reply": "Incorrect password"}
+        return {"reply": "Incorrect password","token":None}
+    
+
+@router.post("/verify")
+def verify_token(tokendata: TokenData):
+    try:
+        payload = jwt.decode(tokendata.token, SECRET_KEY, algorithms=[ALGORITHM])
+        exp = payload.get("exp")
+        if exp and datetime.now(timezone.utc).timestamp() > exp:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+
+        return {"valid": True, "user": payload.get("username")}
+    
+    except jwt.ExpiredSignatureError:
+        return {"valid": False, "error": "Token expired"}
+    except jwt.InvalidTokenError:
+        return {"valid": False, "error": "Invalid token"}
+    except Exception as e:
+        return {"valid": False, "error": "Invalid token"}
