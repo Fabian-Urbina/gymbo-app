@@ -1,11 +1,14 @@
 import React from "react";
 import { useState } from 'react';
-import { IonButton, IonContent, IonInput, IonPage, IonText } from "@ionic/react";
+import { IonButton, IonContent, IonImg, IonInput, IonPage, IonText } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import Header from '../components/Header';
+import { useIonRouter } from "@ionic/react";
+import myImage from '../assets/gymbo-login.png';
 
 const Login: React.FC = () => {
     const history = useHistory()
+    const router = useIonRouter()
     async function login(formData: FormData)  {
         const userData = Object.fromEntries(formData.entries());
         console.log(JSON.stringify(userData));
@@ -18,8 +21,10 @@ const Login: React.FC = () => {
             const data = await res.json();
             console.log("Connected");
             console.log(data.reply)
-            alert('Login failed');
-            //history.push("\login")
+            localStorage.setItem("GYMBO_ACCESS_TOKEN", "12345"); // Stores the token
+            window.location.href = "/login"; // forces browser to load login fresh
+            router.push("/login", "root"); // makes /login the root page
+            history.replace("/login", "root"); // makes /login the root page
         }
         catch { 
             console.log("Login could not connect to backend");
@@ -30,7 +35,7 @@ const Login: React.FC = () => {
         <IonPage>
         <Header title="Login" />
         <IonContent className="ion-padding">
-        <IonText>Please write your credit card number and security code.</IonText>
+        <div> <IonImg src={myImage} style={{ width: "50%", display: "block", marginLeft: "auto", marginRight: "auto",}} /></div>
         <form action={login}>
             <div> <IonInput name="username" type="text" placeholder="Type your username"/> </div> 
             <div> <IonInput name="password" type="password" placeholder="Type your password"/> </div>

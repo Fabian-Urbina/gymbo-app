@@ -1,0 +1,12 @@
+.settings-menu {
+  position: fixed;
+  top: 10px;        /* distance from the top */
+  right: 10px;      /* distance from the right */
+  z-index: 1000;    /* ensures it stays above other elements */
+}
+
+.app-tab-bar {
+  height: 65px;
+  padding-top: 0px;
+  padding-bottom: 15px;
+}
