@@ -19,6 +19,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ className, onLogout }) => {
             <IonPopover isOpen={!!popoverEvent} event={popoverEvent} onDidDismiss={() => setPopoverEvent(null)}>
                 <IonList>
                     <IonItem button onClick={() => setPopoverEvent(null)}> Change Password </IonItem>
+                    <IonItem button onClick={() => setPopoverEvent(null)}> Change user data </IonItem>
                     <IonItem button onClick={() => {setPopoverEvent(null); onLogout();}}> Log out </IonItem>
                 </IonList>
             </IonPopover>

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import bcrypt
 from datetime import datetime, timedelta, timezone
 from auth.routes import router as auth_router
+from profile.routes import router as profile_router
 
 
 # Load variables from .env
@@ -16,6 +17,7 @@ load_dotenv()
 
 app = FastAPI()
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
+app.include_router(profile_router, prefix="/api/profile", tags=["profile"])
 
 # Allow frontend requests (CORS)
 app.add_middleware(

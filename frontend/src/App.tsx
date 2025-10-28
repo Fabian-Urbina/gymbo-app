@@ -40,11 +40,30 @@ const App: React.FC = () => {
   const router = useIonRouter()
   const history = useHistory();
   const [isLoggedIn, setIsLoggedIn] = useState(false) 
+  const [token, setToken] = useState(localStorage.getItem("GYMBO_ACCESS_TOKEN"))
 
 
   useEffect(() => {
-    const token = localStorage.getItem("GYMBO_ACCESS_TOKEN");
-    if (token) setIsLoggedIn(true);}, []); // REMEMBER TO CHANGE THIS SO THE TOKEN IS VERIFIED, ALSO WE NEED TO IDENTIFY USERNAME
+    const validate = async() =>{
+      if (!token) {return false}
+
+      try {
+        const res = await fetch("http://localhost:8000/api/auth/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }), 
+        })
+        const data = await res.json();
+        setIsLoggedIn(data.valid);
+      }  
+      catch (error) {
+        console.log("Login could not connect to backend");
+        return false;
+      }
+    }
+    validate()}, [token]);
+  
+// REMEMBER TO CHANGE THIS SO THE TOKEN IS VERIFIED, ALSO WE NEED TO IDENTIFY USERNAME
 
   const onLogout = () => {
     localStorage.removeItem("GYMBO_ACCESS_TOKEN");

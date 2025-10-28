@@ -67,7 +67,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({onLogout}) => {
         <IonTabBar slot="bottom" className="app-tab-bar">
             <IonTabButton tab="home" href="/home"> <IonIcon icon={person}/> <IonLabel>Home</IonLabel> </IonTabButton>
             <IonTabButton tab="workouts" href="/workouts"> <IonIcon icon={barbell}/> <IonLabel>Workouts</IonLabel> </IonTabButton>
-            <IonTabButton tab="profile" href="/profile"> <IonIcon icon={statsChart}/> <IonLabel>Progress</IonLabel> </IonTabButton>
+            <IonTabButton tab="profile" href="/profile"> <IonIcon icon={statsChart}/> <IonLabel>Profile</IonLabel> </IonTabButton>
         </IonTabBar>
 
     </IonTabs>

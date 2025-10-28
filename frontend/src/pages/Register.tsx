@@ -24,16 +24,18 @@ const Register: React.FC = () => {
         const userData = {username, password, verifyPassword}
         console.log(JSON.stringify(userData));
         try {
-            const res = await fetch("http://localhost:8000/api/register", {
+            const res = await fetch("http://localhost:8000/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(userData)
             })
             const data = await res.json();
             console.log("Connected");
-            console.log(data.reply)
-            alert('Login failed');
-            //history.push("\login")
+            alert(data.reply);
+            if (!data.error) {
+                history.push("\login")
+            }
+            
         }
         catch { 
             console.log("Register could not connect to backend");
@@ -61,10 +63,10 @@ const Register: React.FC = () => {
                     </div>):""}
             </div>
 
-            {/*Login button */}
+            {/*Register button */}
             <IonButton onClick={register} disabled={!username || !isPasswordValid(password) || !verifyPasswordMatches(password,verifyPassword)}> Register </IonButton> 
 
-            {/*Register/Forgot buttons */}
+            {/*Login/Forgot buttons */}
             <div style={{display:"flex", justifyContent:"center", gap:"1rem"}}>
                 <IonButton onClick={() => history.push("login")} fill="clear" style={{minWidth:"auto"}}>Have an account?</IonButton>
             </div>

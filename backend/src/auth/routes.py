@@ -23,7 +23,7 @@ def register(registerdata: AuthData):
     username=registerdata.username
     res = supabase.table("users").select("*").eq("username", username).execute()
     if res.data != []:
-        return{"reply": "Username already exists, try another one"}
+        return{"reply": "Username already exists, try another one","error":True}
     
     password=registerdata.password.encode("utf-8")  
     hashed = bcrypt.hashpw(password, bcrypt.gensalt())
@@ -31,10 +31,10 @@ def register(registerdata: AuthData):
     try:
         insert_res = supabase.table("users").insert({"username":username,"password":hashed_str}).execute()
         print("User inserted")
-        return{"reply": f"user={username}, hashed={hashed_str}"}
+        return{"reply": "Account created succesfully", "error": False}
     except Exception as e:
         print("Error during insert")
-        return{"reply": "Error during insert"}
+        return{"reply": "Error during insert", "error": True}
     
 @router.post("/login")
 def login(logindata: AuthData):
