@@ -20,4 +20,19 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 @router.post("/submit")
 def submit(profile_data:ProfileData):
-    return{"reply":profile_data.name}
+    res = supabase.table("users").update({
+    "name": profile_data.name,
+    "email": profile_data.email,
+    "age": profile_data.age,
+    "gender": profile_data.gender
+    }).eq("users_id", profile_data.users_id).execute()
+    res = supabase.table("users").select("*").eq("users_id", profile_data.users_id).execute()
+    row = res.data[0]
+    user_data = {
+        "users_id": row["users_id"],
+        "username": row["username"],
+        "age": row["age"],
+        "gender": row["gender"],
+        "name": row["name"],
+        "email": row["email"]}
+    return{"reply":"Updated userdata", "user_data": user_data}

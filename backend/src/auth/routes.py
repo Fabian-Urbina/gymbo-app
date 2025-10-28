@@ -47,7 +47,16 @@ def login(logindata: AuthData):
     stored_hash = res.data[0]["password"]
     if bcrypt.checkpw(password.encode("utf-8"), stored_hash.encode("utf-8")):
         token = create_access_token({"username":username},expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
-        return {"reply": "Correct password","token": token}
+        row = res.data[0]
+        user_data = {
+        "users_id": row["users_id"],
+        "username": row["username"],
+        "age": row["age"],
+        "gender": row["gender"],
+        "name": row["name"],
+        "email": row["email"]
+}
+        return {"reply": "Correct password","token": token, "user_data": user_data}
     else:
         return {"reply": "Incorrect password","token":None}
     

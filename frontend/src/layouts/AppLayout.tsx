@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonIcon, IonButton, IonLabel, IonModal } from '@ionic/react';
+import { Redirect, Route, Router, Switch } from 'react-router-dom';
+import { IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonIcon, IonButton, IonLabel, IonModal,useIonRouter } from '@ionic/react';
 import { statsChart, barbell, person } from 'ionicons/icons';
 
 import Home from '../pages/Home';
@@ -49,6 +49,7 @@ interface AppLayoutProps {
 const AppLayout: React.FC<AppLayoutProps> = ({onLogout}) => {
   const [showChat, setShowChat] = useState(false); {/* Persistant chat state among pages */}
   const [messages, setMessages] = useState<string[]>(["🤖 Gymbo: Welcome! I'm your AI gym assistant. Let's get started!"]);
+  const router = useIonRouter();
 
   return(
     <>
@@ -62,7 +63,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({onLogout}) => {
           </Switch>
         </IonRouterOutlet>
         
-        <SettingsMenu className="settings-menu" onLogout={onLogout}/>
+        <SettingsMenu className="settings-menu" onLogout={onLogout} onChangeUserData={()=> router.push("/profile", "root")}/>
 
         <IonTabBar slot="bottom" className="app-tab-bar">
             <IonTabButton tab="home" href="/home"> <IonIcon icon={person}/> <IonLabel>Home</IonLabel> </IonTabButton>

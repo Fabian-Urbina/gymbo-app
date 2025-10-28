@@ -12,14 +12,29 @@ import {
 import Header from '../components/Header';
 
 const Profile: React.FC = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
+  interface UserData {
+  users_id: number;
+  username: string;
+  age: number;
+  gender: string;
+  name: string;
+  email: string;
+  }
+  const [userdata, setUserData] = useState<UserData>(() => {
+    const stored = localStorage.getItem("USER_DATA");
+    return stored ? JSON.parse(stored) as UserData : 
+    { users_id: 0, username: "", age: 0, gender: "", name: "", email: "" };
+    });
+  const users_id = userdata["users_id"]
+  const [name, setName] = useState(userdata["name"]);
+  const [email, setEmail] = useState(userdata["email"]);
+  const [age , setAge] = useState(userdata["age"]) as any;
+  const [gender, setGender] = useState(userdata["gender"]);
   const [reply, setReply] = useState("");
 
   const handleSubmit = async () => {
     const payload = {
+      users_id: users_id ? Number(users_id) : null,
       name: name ? name : null,
       email: email ? email: null,
       age: age? Number(age): null,
@@ -35,8 +50,10 @@ const Profile: React.FC = () => {
 
       const data = await res.json();
       setReply(data.reply);
-      console.log(data.reply)
-    } catch (err) {
+      console.log(data.reply);
+      localStorage.setItem("USER_DATA",JSON.stringify(data.user_data))
+      }
+     catch (err) {
       console.error(err);
       setReply("Error connecting to the API");
     }
@@ -64,7 +81,7 @@ const Profile: React.FC = () => {
 
   return (
     <IonPage>
-      <Header title="Create User" />
+      <Header title="Profile" />
       <IonContent className="ion-padding">
 
         <IonList>

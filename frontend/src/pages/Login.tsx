@@ -25,7 +25,9 @@ const Login: React.FC = () => {
             const data = await res.json();
             console.log("Connected");
             console.log(data.reply)
+            alert(data.reply)
             localStorage.setItem("GYMBO_ACCESS_TOKEN", data.token); // Stores the token
+            localStorage.setItem("USER_DATA",JSON.stringify(data.user_data))
             window.location.href = "/login"; // forces browser to load login fresh
             router.push("/login", "root"); // makes /login the root page
             history.replace("/login", "root"); // makes /login the root page
