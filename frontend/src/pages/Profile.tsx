@@ -8,6 +8,8 @@ import {
   IonButton,
   IonList,
   IonText,
+  IonSelect,
+  IonSelectOption,
 } from "@ionic/react";
 import Header from '../components/Header';
 
@@ -83,17 +85,28 @@ const Profile: React.FC = () => {
     <IonPage>
       <Header title="Profile" />
       <IonContent className="ion-padding">
-
+        <form
+        onSubmit={(e) => {e.preventDefault();handleSubmit();}}>
         <IonList>
           <InputItem label="Name" value={name} setValue={setName} type="text" />
           <InputItem label="Email" value={email} setValue={setEmail} type="text"/>
           <InputItem label="Age" value={age} setValue={setAge} type="number" />
-          <InputItem label="Gender" value={gender} setValue={setGender} type="text" />
+          <IonItem  lines = "none" >
+            <IonLabel position="floating">
+              Gender
+            </IonLabel>
+            <IonSelect value={gender} placeholder="Select" onIonChange={(e) => setGender(e.detail.value)} interface="popover">
+              <IonSelectOption value="M">Male</IonSelectOption>
+              <IonSelectOption value="F">Female</IonSelectOption>
+              <IonSelectOption value="Other">Other</IonSelectOption>
+            </IonSelect>
+          </IonItem>
         </IonList>
-
-        <IonButton expand="block" onClick={handleSubmit}>
+        
+        <IonButton expand="block" type = "submit">
           Send
         </IonButton>
+        </form>
 
         {reply && (
           <IonText color="primary">
