@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from auth.routes import router as auth_router
 from profile.routes import router as profile_router
 from query.routes import router as query_router
+from chatbot.routes import router as chatbot_router
 
 
 # Load variables from .env
@@ -20,6 +21,7 @@ app = FastAPI()
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(profile_router, prefix="/api/profile", tags=["profile"])
 app.include_router(query_router, prefix="/api/query", tags=["query"])
+app.include_router(chatbot_router, prefix="/api/chatbot", tags=["chatbot"])
 
 # Allow frontend requests (CORS)
 app.add_middleware(
@@ -39,40 +41,10 @@ async def uppercase(msg: Message):
     upper_text = msg.message.upper()
     return {"reply":upper_text}
 
-class UserData(BaseModel):
-    name : str = Field(..., min_length=1)
-    age : int = Field(..., ge=0, le=120 )
-    weight : float | None = None
-    height : float | None = None
-@app.post("/api/create_user")
-async def create_user(userdata: UserData):
-    return{"reply": f"Your username is {userdata.name} and you're {userdata.age} years old!"}
-
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_API_KEY")
 supabase: Client =create_client(url,key)
 
-class RegisterData(BaseModel):
-    username : str = Field(...,min_length=1)
-    password : str = Field(...,min_length=1)
-'''@app.post("/api/register")
-def register(registerdata: RegisterData):
-    username=registerdata.username
-    res = supabase.table("users").select("*").eq("username", username).execute()
-    if res.data != []:
-        return{"reply": "Username already exists, try another one"}
-    
-    password=registerdata.password.encode("utf-8")  
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-    hashed_str = hashed.decode("utf-8")
-    try:
-        insert_res = supabase.table("users").insert({"username":username,"password":hashed_str}).execute()
-        print("User inserted")
-        return{"reply": f"user={username}, hashed={hashed_str}"}
-    except Exception as e:
-        print("Error during insert")
-        return{"reply": "Error during insert"}
-'''
 SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60

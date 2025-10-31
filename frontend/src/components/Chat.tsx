@@ -8,6 +8,10 @@ interface ChatProps {
 const Chat: React.FC<ChatProps> = ({ initialMessages, onClose }) => {
   const [messages, setMessages] = useState<string[]>(initialMessages);
   const [input, setInput] = useState("");
+  interface UserData {users_id: number;username: string;age: number;gender: string;name: string;email: string;};
+  const stored = localStorage.getItem("USER_DATA");
+  const userData: UserData = stored ? JSON.parse(stored) as UserData
+  : { users_id: 0, username: "", age: 0, gender: "", name: "", email: "" };
 
   useEffect(() => {
     return () => {
@@ -20,10 +24,10 @@ const Chat: React.FC<ChatProps> = ({ initialMessages, onClose }) => {
     if (!input) return;
     setMessages(prev => [...prev, `🧑 You: ${input}`]); // Defines what setMessages will do with the current messages state
     try {
-      const res = await fetch("http://localhost:8000/api/chat", {
+      const res = await fetch("http://localhost:8000/api/chatbot/chat_response", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ userData,messages })
       });
       const data = await res.json();
       setMessages(prev => [...prev, `🤖 Gymbo: ${data.reply}`]);
