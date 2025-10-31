@@ -13,3 +13,5 @@ class UsersData(BaseModel):
     age: Optional[int] = None
     gender: Optional[str] = None
     day: Optional[str] = None
+class TableName(BaseModel):
+    table_name : str

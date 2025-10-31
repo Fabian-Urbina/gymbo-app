@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
-from .schemas import SetsData, UsersData
+from .schemas import SetsData, UsersData, TableName
 
 load_dotenv()
 router=APIRouter()
@@ -62,11 +62,20 @@ def day_workouts(users_data: UsersData):
     # 🔹 Supabase query
     res = (
         supabase.table("sets")
-        .select("*")
+        .select("*") 
         .eq("users_id", users_data.users_id)
         .gte("datetime", start_of_day.isoformat())
         .lt("datetime", end_of_day.isoformat())
         .execute()
     )
 
+    return {"reply": "Query executed", "data": res.data}
+
+
+@router.post("/admin_get_table")
+def admin_get_table(input: TableName):
+    res = (
+        supabase.table(input.table_name).select("*")
+        .execute()
+    )
     return {"reply": "Query executed", "data": res.data}
