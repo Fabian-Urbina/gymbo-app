@@ -80,6 +80,7 @@ const App: React.FC = () => {
           <Switch>
             <Route exact path="/login"> {!isLoggedIn ? <LoginLayout /> : <Redirect to="/home" />} </Route>
             <Route exact path="/register"> {!isLoggedIn ? <LoginLayout /> : <Redirect to="/home" />} </Route>
+            <Route exact path="/admin"> {!isLoggedIn ? <LoginLayout /> : <Redirect to="/home" />} </Route>
             <Route path="/"> {isLoggedIn ? <AppLayout onLogout={onLogout} /> : <Redirect to="/login" push={false}/>} </Route>
           </Switch>
         </IonRouterOutlet>
