@@ -13,9 +13,12 @@ class UsersData(BaseModel):
     age: Optional[int] = None
     gender: Optional[str] = None
     day: Optional[str] = None
+class Message(BaseModel):
+    role : str
+    content : str
 class ChatRequest(BaseModel):
     users_data: UsersData = Field(alias="userData")
-    conversation: List[str] = Field(alias="messages")
+    conversation: List[Message] = Field(alias="messages")
 
     class Config:
         populate_by_name = True  

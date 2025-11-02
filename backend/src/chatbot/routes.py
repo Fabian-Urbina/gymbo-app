@@ -6,17 +6,54 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
-from .schemas import SetsData, UsersData, ChatRequest
+from .schemas import SetsData, UsersData, ChatRequest,Message
+from openai import OpenAI, RateLimitError
 
 load_dotenv()
 router=APIRouter()
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_API_KEY")
 supabase: Client =create_client(url,key)
+open_ai_key = os.getenv("OPEN_AI_KEY")
+client = OpenAI(api_key = open_ai_key)
 SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 @router.post("/chat_response")
 def chat_response(payload:ChatRequest):
-    return {"reply":"algo","command":"otra cosa"}
+    user_data=payload.users_data
+    users_keys= list(supabase.table("users").select("*").limit(1).execute().data[0].keys())
+    exercises_keys= list(supabase.table("exercises").select("*").limit(1).execute().data[0].keys())
+    sets_keys= list(supabase.table("sets").select("*").limit(1).execute().data[0].keys())
+    conversation = [
+    {"role": "system", "content": "You are an assistant that converts natural language workout queries into Python commands."},
+    {"role": "system", "content": "The Supabase client is already defined with the name 'supabase'."},
+    {"role": "system", "content": (
+        "Always return a valid JSON object with keys 'reply' and 'command'. "
+        "reply is the reply to the user."
+        "'command' must be a single line or block of executable Python code. "
+        "Do not include markdown, SQL, explanations, or comments. "
+        "If a query cannot be expressed with Supabase syntax, set 'command' to null."
+    )},
+    {"role": "system", "content": (
+        f"The 'users' table has columns: {users_keys} "
+        f"The 'exercises' table has columns: {exercises_keys} "
+        f"The 'sets' table has columns: {sets_keys} "
+    )},
+    {"role": "system", "content": "When asked for a query, generate a Supabase select or insert command"
+    "like supabase.table('Series').insert({...}).execute()"}
+    ]
+    conversation = conversation + payload.conversation
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=conversation
+        )
+    except RateLimitError as e:
+        return {"reply": e, "command": None}
+    bot_message = response.choices[0].message.content
+    conversation.append({"role": "assistant", "content": bot_message})
+    bot_message = re.sub(r"```json|```", "", bot_message).strip()
+    bot_message = re.sub(r"//.*", "", bot_message)
+    return {"reply":str(payload.conversation[-1].content),"command":str(conversation)}

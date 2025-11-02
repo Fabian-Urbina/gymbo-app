@@ -7,6 +7,7 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ initialMessages, onClose }) => {
   const [messages, setMessages] = useState<string[]>(initialMessages);
+  const [openAiConversation, setOpenAiConversation] = useState<{ role: string; content: string }[]>([]);
   const [input, setInput] = useState("");
   interface UserData {users_id: number;username: string;age: number;gender: string;name: string;email: string;};
   const stored = localStorage.getItem("USER_DATA");
@@ -22,16 +23,24 @@ const Chat: React.FC<ChatProps> = ({ initialMessages, onClose }) => {
 
   const sendMessage = async () => { // if non-empty, adds the input to the chatbot and then adds the bot answer
     if (!input) return;
-    setMessages(prev => [...prev, `🧑 You: ${input}`]); // Defines what setMessages will do with the current messages state
+
+    const newConversation = [...openAiConversation, { role: "user", content: input }];
+    const newMessages = [...messages, `🧑 You: ${input}`];
+    setOpenAiConversation(newConversation);
+    setMessages(newMessages);
     try {
       const res = await fetch("http://localhost:8000/api/chatbot/chat_response", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userData,messages })
+        body: JSON.stringify({ userData,messages:newConversation })
       });
       const data = await res.json();
+      alert(data.command)
       setMessages(prev => [...prev, `🤖 Gymbo: ${data.reply}`]);
-    } catch { setMessages(prev => [...prev, "🤖 Gymbo: Error connecting to backend"]); }
+      setOpenAiConversation(prev => [...prev,{ role: "system", content: data.reply }]);
+
+    } catch
+      { setMessages(prev => [...prev, "🤖 Gymbo: Error connecting to backend"]); }
     setInput(""); // Reset user input state
   };
 
