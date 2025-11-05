@@ -35,7 +35,9 @@ const Chat: React.FC<ChatProps> = ({ initialMessages, onClose }) => {
         body: JSON.stringify({ userData,messages:newConversation })
       });
       const data = await res.json();
-      alert(data.command)
+      console.log(data.last_user_input)
+      console.log(data.reply)
+      console.log(data.command)
       setMessages(prev => [...prev, `🤖 Gymbo: ${data.reply}`]);
       setOpenAiConversation(prev => [...prev,{ role: "system", content: data.reply }]);
 

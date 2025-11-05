@@ -8,6 +8,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
 from .schemas import SetsData, UsersData, ChatRequest,Message
 from openai import OpenAI, RateLimitError
+import re
+from .utils import clean_reply
 
 load_dotenv()
 router=APIRouter()
@@ -23,6 +25,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 @router.post("/chat_response")
 def chat_response(payload:ChatRequest):
     user_data=payload.users_data
+    current_time= datetime.now(timezone.utc)
     users_keys= list(supabase.table("users").select("*").limit(1).execute().data[0].keys())
     exercises_keys= list(supabase.table("exercises").select("*").limit(1).execute().data[0].keys())
     sets_keys= list(supabase.table("sets").select("*").limit(1).execute().data[0].keys())
@@ -40,6 +43,8 @@ def chat_response(payload:ChatRequest):
         f"The 'users' table has columns: {users_keys} "
         f"The 'exercises' table has columns: {exercises_keys} "
         f"The 'sets' table has columns: {sets_keys} "
+        f"The userdata of this user is {user_data}"
+        f"The current time in UTC is {current_time}"
     )},
     {"role": "system", "content": "When asked for a query, generate a Supabase select or insert command"
     "like supabase.table('Series').insert({...}).execute()"}
@@ -51,9 +56,8 @@ def chat_response(payload:ChatRequest):
             messages=conversation
         )
     except RateLimitError as e:
-        return {"reply": e, "command": None}
+        return {"reply": e, "command": None,"last_user_input":str(payload.conversation[-1].content)}
     bot_message = response.choices[0].message.content
-    conversation.append({"role": "assistant", "content": bot_message})
-    bot_message = re.sub(r"```json|```", "", bot_message).strip()
-    bot_message = re.sub(r"//.*", "", bot_message)
-    return {"reply":str(payload.conversation[-1].content),"command":str(conversation)}
+    bot_message = clean_reply(bot_message)
+    conversation.append({"role": "assistant", "content": str(bot_message)})
+    return {"reply":bot_message["reply"],"command":bot_message["command"],"last_user_input":str(payload.conversation[-1].content)}
