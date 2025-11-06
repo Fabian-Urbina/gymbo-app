@@ -30,24 +30,41 @@ def chat_response(payload:ChatRequest):
     exercises_keys= list(supabase.table("exercises").select("*").limit(1).execute().data[0].keys())
     sets_keys= list(supabase.table("sets").select("*").limit(1).execute().data[0].keys())
     conversation = [
-    {"role": "system", "content": "You are an assistant that converts natural language workout queries into Python commands."},
+    {"role": "system", "content": "You are an assistant that converts natural language workout queries into structured JSON commands for Supabase."},
     {"role": "system", "content": "The Supabase client is already defined with the name 'supabase'."},
     {"role": "system", "content": (
-        "Always return a valid JSON object with keys 'reply' and 'command'. "
-        "reply is the reply to the user."
-        "'command' must be a single line or block of executable Python code. "
-        "Do not include markdown, SQL, explanations, or comments. "
-        "If a query cannot be expressed with Supabase syntax, set 'command' to null."
+        "Always return a valid JSON object with the following keys: "
+        "'reply' (a natural language answer to the user) and "
+        "'command' (a JSON object strictly following the SQLCommand Pydantic model below). "
+        "Never include code blocks, markdown, SQL strings, or explanations outside the JSON object. "
+        "If the request cannot be represented as a valid SQLCommand, set 'command' to null."
     )},
     {"role": "system", "content": (
-        f"The 'users' table has columns: {users_keys} "
-        f"The 'exercises' table has columns: {exercises_keys} "
-        f"The 'sets' table has columns: {sets_keys} "
-        f"The userdata of this user is {user_data}"
-        f"The current time in UTC is {current_time}"
+        "The SQLCommand model schema is:\n"
+        "{\n"
+        "  action: 'select' | 'insert' | 'update' | 'delete' | 'rpc',\n"
+        "  table: string,\n"
+        "  columns?: list[string],\n"
+        "  filters?: list[{column: string, op: 'eq'|'neq'|'gt'|'gte'|'lt'|'lte'|'like'|'ilike'|'in', value: string|int|float|bool|list}],\n"
+        "  order?: {column: string, desc: bool},\n"
+        "  limit?: int,\n"
+        "  values?: object | list[object],\n"
+        "  function?: string,\n"
+        "  args?: object\n"
+        "}"
     )},
-    {"role": "system", "content": "When asked for a query, generate a Supabase select or insert command"
-    "like supabase.table('Series').insert({...}).execute()"}
+    {"role": "system", "content": (
+        f"The 'users' table has columns: {users_keys}. "
+        f"The 'exercises' table has columns: {exercises_keys}. "
+        f"The 'sets' table has columns: {sets_keys}. "
+        f"The user's profile data is: {user_data}. "
+        f"The current UTC time is: {current_time}."
+    )},
+    {"role": "system", "content": (
+        "When asked for a query, generate a JSON command that matches the SQLCommand model. "
+        "Use 'select' for queries that retrieve information, and 'insert' for actions that add new data. "
+        "All numeric or boolean values must be typed correctly (not as strings)."
+    )}
     ]
     conversation = conversation + payload.conversation
     try:

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional,List
+from typing import Optional, List, Literal, Union
 class SetsData(BaseModel):
     users_id : int
     exercises_id: int 
@@ -21,4 +21,24 @@ class ChatRequest(BaseModel):
     conversation: List[Message] = Field(alias="messages")
 
     class Config:
-        populate_by_name = True  
+        populate_by_name = True
+
+class Filter(BaseModel):
+    column: str
+    op: Literal["eq", "neq", "gt", "gte", "lt", "lte", "like", "ilike", "in"]
+    value: Union[str, int, float, bool, List[Union[str, int, float, bool]]]
+
+class OrderBy(BaseModel):
+    column: str
+    desc: bool = False
+
+class SQLCommand(BaseModel):
+    action: Literal["select", "insert", "update", "delete", "rpc"]
+    table: str
+    columns: Optional[List[str]] = ["*"]
+    filters: Optional[List[Filter]] = None
+    order: Optional[OrderBy] = None
+    limit: Optional[int] = None
+    values: Optional[Union[dict, List[dict]]] = None  # for insert/update
+    function: Optional[str] = None                    # for rpc
+    args: Optional[dict] = None    

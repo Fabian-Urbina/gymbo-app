@@ -7,6 +7,7 @@ import jwt
 from openai import OpenAI
 from supabase import Client, create_client
 import re, json
+from .schemas import SQLCommand
 
 
 load_dotenv()
@@ -32,6 +33,6 @@ def clean_reply(bot_message:str): # cleans bot_message, parse as json if possibl
          return {"reply": f"Error parsing JSON: {e}", "command": None}
     return{"reply":reply,"command":command}
 
-def execute_command(command:str): #Safely execute command
+def execute_command(command:SQLCommand): #Read SQLCommand and execute
     return(True)
 
