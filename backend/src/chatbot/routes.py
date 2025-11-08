@@ -6,11 +6,11 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
-from .schemas import SetsData, UsersData, ChatRequest,Message
+from .schemas import SetsData, UsersData, ChatRequest,Message, SQLCommand
 from openai import OpenAI, RateLimitError
 import re
-from .utils import clean_reply
-
+from .utils import clean_reply, execute_command
+import json
 load_dotenv()
 router=APIRouter()
 url = os.getenv("SUPABASE_URL")
@@ -74,7 +74,20 @@ def chat_response(payload:ChatRequest):
         )
     except RateLimitError as e:
         return {"reply": e, "command": None,"last_user_input":str(payload.conversation[-1].content)}
+    
     bot_message = response.choices[0].message.content
     bot_message = clean_reply(bot_message)
     conversation.append({"role": "assistant", "content": str(bot_message)})
-    return {"reply":bot_message["reply"],"command":bot_message["command"],"last_user_input":str(payload.conversation[-1].content)}
+
+    if bot_message["command"]:
+        command_obj = SQLCommand(**bot_message["command"])
+        result = execute_command(command_obj)
+    else:
+        result = None
+
+    return {
+        "reply": bot_message["reply"],
+        "command": bot_message["command"],
+        "result": result,
+        "last_user_input": str(payload.conversation[-1].content)
+    }
